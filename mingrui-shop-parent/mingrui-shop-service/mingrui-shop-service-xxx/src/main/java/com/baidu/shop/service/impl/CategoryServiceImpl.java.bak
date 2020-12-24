@@ -1,0 +1,94 @@
+package com.baidu.shop.service.impl;
+
+import com.baidu.shop.base.BaseApiService;
+import com.baidu.shop.base.Result;
+import com.baidu.shop.entity.CategoryEntity;
+import com.baidu.shop.mapper.CategoryMapper;
+import com.baidu.shop.service.CategoryService;
+import com.google.gson.JsonObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RestController;
+import tk.mybatis.mapper.entity.Example;
+
+import java.util.List;
+
+/**
+ * @ClassName CategoryServiceImpl
+ * @Description: TODO
+ * @Author shenyaqi
+ * @Date 2020/12/22
+ * @Version V1.0
+ **/
+@RestController
+public class CategoryServiceImpl extends BaseApiService implements CategoryService {
+
+    @Autowired
+    private CategoryMapper categoryMapper;
+
+    @Override
+    public Result<List<CategoryEntity>> getCategoryByPid(Integer pid) {
+
+        CategoryEntity categoryEntity = new CategoryEntity();
+        categoryEntity.setParentId(pid);
+
+        List<CategoryEntity> list = categoryMapper.select(categoryEntity);
+        return this.setResultSuccess(list);
+    }
+
+    @Transactional //以后增删改方法必须加这个注解
+    @Override
+    public Result<JsonObject> deleteCategoryById(Integer id) {
+
+        // 判断当前节点是否为父节点
+        // 如果当前被删除节点的父节点下 只有当前节点
+        // 那父节点应该变成子节点 --> isParent = 0;
+
+        // 1 : 通过当前id查询数据
+        if(null != id && id > 0){
+            CategoryEntity categoryEntity = categoryMapper.selectByPrimaryKey(id);
+            // 2 : 判断是否为父节点
+            //true: return setError
+            if(categoryEntity.getIsParent() == 1) return this.setResultError("当前节点为父错节点");//return之后的代码不会执行
+
+            //tkmapper推荐使用这种条件查询
+            //Example example = new Example(CategoryEntity.class);
+            //Example.Criteria criteria = example.createCriteria();//where parent_id = categoryEntity.getParentId()
+            //criteria.andEqualTo("parent_id",categoryEntity.getParentId())
+            //List<CategoryEntity> categoryList = categoryMapper.selectByExample(example);
+
+            List<CategoryEntity> categoryList = categoryMapper.selectByExample(
+                    new Example(CategoryEntity.class)
+                    .createCriteria()
+                    .andEqualTo("parent_id", categoryEntity.getParentId()));
+
+            //通过当前要删除数据的parentid查询出来的
+            //如果查询出来的数据条数 <= 1
+            //更新父级节点的状态!!!
+            if(categoryList.size() <= 1){
+
+                CategoryEntity updateCategoryEntity = new CategoryEntity();
+                updateCategoryEntity.setIsParent(0);
+                updateCategoryEntity.setId(categoryEntity.getParentId());
+
+                categoryMapper.updateByPrimaryKeySelective(updateCategoryEntity);
+            }
+
+        }
+//        if(null == id || id <= 0){
+//            return this.setResultError("id不合法");
+//        }
+
+
+        // 3 : 通过父节点id查询是否有parent_id为父节点id的其他数据
+        // select * from cate where parent_id = ?
+        // 如果返回的数据 > 1的时候说明当前节点的父节点下还有其他节点 所以 父节点的is_parent = 1
+        // 如果返回的数据 <= 1时候 将当前节点的父节点is_parent = 0
+
+        // 一个方法中有修改 / 删除 --> 事务
+        //
+
+        categoryMapper.deleteByPrimaryKey(id);
+        return this.setResultSuccess();
+    }
+}
