@@ -31,14 +31,33 @@ public class CategoryServiceImpl extends BaseApiService implements CategoryServi
     private CategoryMapper categoryMapper;
 
     @Transactional
+    @Override
+    public Result<JsonObject> addCategoryById(CategoryEntity categoryEntity) {
+        //确保当前新增节点的父节点状态(isParent=1)
+        //categoryEntity.getParentId() --> isParent = 1;
+
+
+        //mysql 有索引的!!! --> parent_id建立索引 --> 一本书的目录
+        //通过parentId查询数据
+        //判断isParent == 1
+        //false : update isParent = 1 where id = getParentId
+
+        //update isParent = 1 where id = getParentId --> redolog undolog binlog + 事务的隔离级别--> 更新索引
+        CategoryEntity parentCategoryEntity = new CategoryEntity();
+        parentCategoryEntity.setId(categoryEntity.getParentId());
+        parentCategoryEntity.setIsParent(1);
+        categoryMapper.updateByPrimaryKeySelective(parentCategoryEntity);
+
+        categoryMapper.insertSelective(categoryEntity);
+
+        return this.setResultSuccess();
+    }
+
+    @Transactional
     //@Transient
     @Override
     public Result<JsonObject> editCategoryById(CategoryEntity categoryEntity) {
-
-        //修改
-
         categoryMapper.updateByPrimaryKeySelective(categoryEntity);
-
         return this.setResultSuccess();
     }
 

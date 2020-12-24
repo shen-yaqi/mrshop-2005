@@ -12,6 +12,11 @@
     <artifactId>mingrui-shop-common-core</artifactId>
 
     <dependencies>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
         <!--处理json与各种数据类型或文档类型的转换-->
         <dependency>
             <groupId>com.google.code.gson</groupId>

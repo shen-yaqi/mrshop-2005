@@ -24,7 +24,7 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!--Entity 中的@Table 和@Id需要此注解-->
+        <!--Entity 中的@Table 和@Id需要此依赖-->
         <dependency>
             <groupId>javax.persistence</groupId>
             <artifactId>persistence-api</artifactId>
