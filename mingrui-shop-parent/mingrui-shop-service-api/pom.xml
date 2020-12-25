@@ -37,6 +37,13 @@
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
+        <!--分页工具-->
+        <dependency>
+            <groupId>com.github.pagehelper</groupId>
+            <artifactId>pagehelper-spring-boot-starter</artifactId>
+            <version>1.2.10</version>
+        </dependency>
+
         <!--引入common工程代码 把微服务的这个概念做到极致   让模块(服务) 复用-->
         <dependency>
             <groupId>com.baidu</groupId>
