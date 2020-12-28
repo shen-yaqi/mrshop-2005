@@ -1,5 +1,6 @@
 package com.baidu.shop.base;
 
+import com.sun.org.apache.bcel.internal.generic.RETURN;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -26,4 +27,9 @@ public class BaseDTO {
 
     @ApiModelProperty(value = "是否升序")
     private String order;
+
+    public String getOrderBy(){
+        return sort + " " + (Boolean.valueOf(order) ? "desc" : "asc");
+    }
+
 }
