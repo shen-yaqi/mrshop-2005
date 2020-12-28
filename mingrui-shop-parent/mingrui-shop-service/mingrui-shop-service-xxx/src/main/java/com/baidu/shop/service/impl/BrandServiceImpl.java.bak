@@ -1,0 +1,153 @@
+package com.baidu.shop.service.impl;
+
+import com.alibaba.fastjson.JSONObject;
+import com.baidu.shop.base.BaseApiService;
+import com.baidu.shop.base.Result;
+import com.baidu.shop.dto.BrandDTO;
+import com.baidu.shop.entity.BrandEntity;
+import com.baidu.shop.entity.CategoryBrandEntity;
+import com.baidu.shop.mapper.BrandMapper;
+import com.baidu.shop.mapper.CategoryBrandMapper;
+import com.baidu.shop.service.BrandService;
+import com.baidu.shop.utils.BaiduBeanUtil;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RestController;
+import tk.mybatis.mapper.entity.Example;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * @ClassName BrandServiceImpl
+ * @Description: TODO
+ * @Author shenyaqi
+ * @Date 2020/12/25
+ * @Version V1.0
+ **/
+@RestController
+public class BrandServiceImpl extends BaseApiService implements BrandService {
+
+
+    private BrandMapper brandMapper;
+
+    @Autowired
+    private CategoryBrandMapper categoryBrandMapper;
+
+    @Autowired
+    public void setBrandMapper(BrandMapper brandMapper) {
+        this.brandMapper = brandMapper;
+    }
+
+    @Transactional
+    @Override
+    public Result<JSONObject> saveBrandInfo(BrandDTO brandDTO) {
+
+        //新增返回主键?
+        //两种方式实现 select-key insert加两个属性
+        BrandEntity brandEntity = BaiduBeanUtil.copyProperties(brandDTO, BrandEntity.class);
+        brandMapper.insertSelective(brandEntity);
+
+        //维护中间表数据
+        String categories = brandDTO.getCategories();//得到分类集合字符串
+        if(StringUtils.isEmpty(brandDTO.getCategories())) return this.setResultError("");
+        //List<CategoryBrandEntity> categoryBrandEntities = new ArrayList<>();
+
+        //判断分类集合字符串中是否包含,
+        if(categories.contains(",")){//多个分类 --> 批量新增
+            /*String[] categoryArr = categories.split(",");
+
+            for (String s : categoryArr) {
+                CategoryBrandEntity categoryBrandEntity = new CategoryBrandEntity();
+                categoryBrandEntity.setBrandId(brandEntity.getId());
+                categoryBrandEntity.setCategoryId(Integer.valueOf(s));
+                categoryBrandEntities.add(categoryBrandEntity);
+            }*/
+
+            //insertListMapper
+            //categoryBrandMapper.insertList(categoryBrandEntities);
+            //数组转List???
+            //String[] categoryArr = categories.split(",");
+            /*List<String> strings = new ArrayList<>();
+            for (String str : categoryArr){
+                strings.add(str);
+            }*/
+
+            /*categoryBrandMapper.insertList(Arrays.asList(categoryArr).stream().map(categoryIdStr -> {
+                CategoryBrandEntity categoryBrandEntity = new CategoryBrandEntity();
+                categoryBrandEntity.setCategoryId(Integer.valueOf(categoryIdStr));
+                categoryBrandEntity.setBrandId(brandEntity.getId());
+                return categoryBrandEntity;
+            }).collect(Collectors.toList()));*/
+
+            categoryBrandMapper.insertList(
+                    Arrays.asList(categories.split(","))
+                            .stream()
+                            .map(categoryIdStr -> new CategoryBrandEntity(Integer.valueOf(categoryIdStr),brandEntity.getId()))
+                            .collect(Collectors.toList())
+            );
+
+
+            //categories.split(",")
+
+        }else{//普通单个新增
+
+            CategoryBrandEntity categoryBrandEntity = new CategoryBrandEntity();
+            categoryBrandEntity.setBrandId(brandEntity.getId());
+            categoryBrandEntity.setCategoryId(Integer.valueOf(categories));
+
+            categoryBrandMapper.insert(categoryBrandEntity);
+        }
+
+        //brandId categoryid
+
+        return this.setResultSuccess();
+    }
+
+    @Override
+    public Result<PageInfo<BrandEntity>> getBrandInfo(BrandDTO brandDTO) {
+
+        //**** order by sort desc --> asc
+
+        //limit 作用? 限制查询
+        //mybatis如何自定义分页插件 --> mybatis执行器
+        PageHelper.startPage(brandDTO.getPage(),brandDTO.getRows());
+
+        if(!StringUtils.isEmpty(brandDTO.getSort())) PageHelper.orderBy(brandDTO.getOrderBy());
+
+//        if(!StringUtils.isEmpty(brandDTO.getSort())){
+
+        //String order = "";
+        //valueOf 和 parse***的区别???
+        //null值排序的现象???? null值排序值是最小的
+        //Integer.valueOf 和Integer.parseInteger()方法的区别???
+//            if(Boolean.valueOf(brandDTO.getOrder())){
+//                order = "desc";
+//            }else{
+//                order = "asc";
+//            }
+        //三目运算 ?? 条件表达式 ? "true" : "false" --> if代码块和else代码块中都只有一行代码的话可以直接写成三目运算
+        //PageHelper.orderBy(brandDTO.getSort() + " " + (Boolean.valueOf(brandDTO.getOrder()) ? "desc" : "asc"));
+//            PageHelper.orderBy(brandDTO.getOrderBy());
+//        }
+
+
+        //bean copy
+//        BrandEntity brandEntity = new BrandEntity();
+//        BeanUtils.copyProperties(brandDTO,brandEntity);
+        BrandEntity brandEntity = BaiduBeanUtil.copyProperties(brandDTO,BrandEntity.class);
+
+        Example example = new Example(BrandEntity.class);
+        example.createCriteria().andLike("name","%" + brandEntity.getName() + "%");
+
+        List<BrandEntity> brandEntities = brandMapper.selectByExample(example);
+        PageInfo<BrandEntity> pageInfo = new PageInfo<>(brandEntities);
+
+        return this.setResultSuccess(pageInfo);
+    }
+}
