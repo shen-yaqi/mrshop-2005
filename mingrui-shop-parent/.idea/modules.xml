@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/mingrui-shop-basics/mingrui-shop-basic-upload-server/mingrui-shop-basic-upload-server.iml" filepath="$PROJECT_DIR$/mingrui-shop-basics/mingrui-shop-basic-upload-server/mingrui-shop-basic-upload-server.iml" />
       <module fileurl="file://$PROJECT_DIR$/mingrui-shop-basics/mingrui-shop-basic-zuul-server/mingrui-shop-basic-zuul-server.iml" filepath="$PROJECT_DIR$/mingrui-shop-basics/mingrui-shop-basic-zuul-server/mingrui-shop-basic-zuul-server.iml" />
       <module fileurl="file://$PROJECT_DIR$/mingrui-shop-basics/mingrui-shop-basics.iml" filepath="$PROJECT_DIR$/mingrui-shop-basics/mingrui-shop-basics.iml" />
       <module fileurl="file://$PROJECT_DIR$/mingrui-shop-basics/mingrui-shop-basics-eureka-server/mingrui-shop-basics-eureka-server.iml" filepath="$PROJECT_DIR$/mingrui-shop-basics/mingrui-shop-basics-eureka-server/mingrui-shop-basics-eureka-server.iml" />
