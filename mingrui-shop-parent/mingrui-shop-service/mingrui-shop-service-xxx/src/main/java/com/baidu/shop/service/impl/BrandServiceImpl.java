@@ -78,7 +78,7 @@ public class BrandServiceImpl extends BaseApiService implements BrandService {
             categoryBrandEntity.setBrandId(brandEntity.getId());
             categoryBrandEntity.setCategoryId(Integer.valueOf(categories));
 
-            categoryBrandMapper.insert(categoryBrandEntity);
+            categoryBrandMapper.insertSelective(categoryBrandEntity);
         }
 
         return this.setResultSuccess();
@@ -91,11 +91,11 @@ public class BrandServiceImpl extends BaseApiService implements BrandService {
 
         if(!StringUtils.isEmpty(brandDTO.getSort())) PageHelper.orderBy(brandDTO.getOrderBy());
 
-
         BrandEntity brandEntity = BaiduBeanUtil.copyProperties(brandDTO,BrandEntity.class);
 
         Example example = new Example(BrandEntity.class);
-        example.createCriteria().andLike("name","%" + brandEntity.getName() + "%");
+        if(!StringUtils.isEmpty(brandEntity.getName()))
+            example.createCriteria().andLike("name","%" + brandEntity.getName() + "%");
 
         List<BrandEntity> brandEntities = brandMapper.selectByExample(example);
         PageInfo<BrandEntity> pageInfo = new PageInfo<>(brandEntities);
