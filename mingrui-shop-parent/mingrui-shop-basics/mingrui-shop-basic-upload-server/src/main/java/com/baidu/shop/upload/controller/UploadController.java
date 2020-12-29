@@ -43,16 +43,8 @@ public class UploadController extends BaseApiService {
 
         String filename = file.getOriginalFilename();//获取文件名
 
-        //String path = "";
         String os = System.getProperty("os.name").toLowerCase();
         String path = os.indexOf("win") != -1 ? windowsPath : os.indexOf("lin") != -1 ? linuxPath : "";
-//        if(os.indexOf("win") != -1){
-//            path = windowsPath;
-//        }else if(os.indexOf("lin") != -1){
-//            path = linuxPath;
-//        }
-
-        //UUID.randomUUID() + 1.jpg UUID.randomUUID() + 1.jpg
         filename = UUID.randomUUID() + filename;//防止文件名重复
 
         //创建文件 路径+分隔符(linux和window的目录分隔符不一样)+文件名
