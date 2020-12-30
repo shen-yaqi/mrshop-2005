@@ -7,10 +7,7 @@ import com.baidu.shop.entity.BrandEntity;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @ClassName BrandService
@@ -27,10 +24,15 @@ public interface BrandService {
     Result<PageInfo<BrandEntity>> getBrandInfo(BrandDTO brandDTO);
 
     @PostMapping(value = "brand/save")
-    @ApiOperation(value = "查询品牌列表")
+    @ApiOperation(value = "新增品牌")
     Result<JSONObject> saveBrandInfo(@RequestBody BrandDTO brandDTO);
 
     @PutMapping(value = "brand/save")
-    @ApiOperation(value = "查询品牌列表")
+    @ApiOperation(value = "修改品牌")
     Result<JSONObject> editBrandInfo(@RequestBody BrandDTO brandDTO);
+
+
+    @DeleteMapping(value = "brand/delete")
+    @ApiOperation(value = "删除品牌")
+    Result<JSONObject> deleteBrandInfo(Integer id);
 }
