@@ -93,6 +93,8 @@ public class CategoryServiceImpl extends BaseApiService implements CategoryServi
         //判断当前节点是否为父节点(安全!)
         if(categoryEntity.getIsParent() == 1) return this.setResultError(HTTPStatus.OPERATION_ERROR,"当前节点为父节点");//return之后的代码不会执行
 
+        //如果当前分类被品牌绑定的话不能被删除 --> 通过分类id查询中间表是否有数据 true : 当前分类不能被删除 false:继续执行
+
         //通过当前节点的父节点id 查询 当前节点(将要被删除的节点)的父节点下是否还有其他子节点
         Example example = new Example(CategoryEntity.class);
         example.createCriteria().andEqualTo("parentId", categoryEntity.getParentId());
