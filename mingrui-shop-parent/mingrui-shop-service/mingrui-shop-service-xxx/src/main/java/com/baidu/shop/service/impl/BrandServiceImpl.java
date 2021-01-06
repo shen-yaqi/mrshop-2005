@@ -45,6 +45,14 @@ public class BrandServiceImpl extends BaseApiService implements BrandService {
         this.brandMapper = brandMapper;
     }
 
+    @Override
+    public Result<List<BrandEntity>> getBrandInfoByCategoryId(Integer cid) {
+
+        List<BrandEntity> list = brandMapper.getBrandInfoByCategoryId(cid);
+
+        return this.setResultSuccess(list);
+    }
+
     @Transactional
     @Override
     public Result<JSONObject> deleteBrandInfo(Integer id) {
