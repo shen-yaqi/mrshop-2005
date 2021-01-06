@@ -61,14 +61,33 @@ public class GoodsServiceImpl extends BaseApiService implements GoodsService {
 
         List<SpuDTO> spuDTOList = spuEntities.stream().map(spuEntity -> {
             SpuDTO spuDTO1 = BaiduBeanUtil.copyProperties(spuEntity, SpuDTO.class);
-            //通过分类id集合查询数据
+
+            //分类名称 cid1 + cid2 + cid3
+            /*CategoryEntity categoryEntity = categoryMapper.selectByPrimaryKey(spuEntity.getCid1());
+            CategoryEntity categoryEntity2 = categoryMapper.selectByPrimaryKey(spuEntity.getCid2());
+            CategoryEntity categoryEntity3 = categoryMapper.selectByPrimaryKey(spuEntity.getCid3());
+            spuDTO1.setCategoryName(categoryEntity.getName() + "/" + categoryEntity2.getName() + "/" + categoryEntity3.getName());*/
+            /*List<Integer> cidList = new ArrayList<>();
+            cidList.add(spuEntity.getCid1());
+            cidList.add(spuEntity.getCid2());
+            cidList.add(spuEntity.getCid3());*/
+            //List<Integer> cidList = Arrays.asList(spuEntity.getCid1(), spuEntity.getCid2(), spuEntity.getCid3());
+
             List<CategoryEntity> categoryEntities = categoryMapper.selectByIdList(Arrays.asList(spuEntity.getCid1(), spuEntity.getCid2(), spuEntity.getCid3()));
-            // 遍历集合并且将分类名称用 / 拼接
-            // 3/1/2
-            //ajax --> 并不是所有情况都要用异步 jquery.validate 验证用户名存在不存在
+
             String categoryName = categoryEntities.stream().map(categoryEntity -> categoryEntity.getName()).collect(Collectors.joining("/"));
             spuDTO1.setCategoryName(categoryName);
+            /*String categoryName = "";
+            List<String> strings = new ArrayList<>();
+            strings.set(0,"");
+            categoryEntities.stream().forEach(categoryEntity -> {
+                strings.set(0,strings.get(0) + categoryEntity.getName() + "/");
+            });
+            categoryName = strings.get(0).substring(0,strings.get(0).length());*/
 
+
+            //品牌名称 brandId
+            //spuEntity.getBrandId()
             BrandEntity brandEntity = brandMapper.selectByPrimaryKey(spuEntity.getBrandId());
             spuDTO1.setBrandName(brandEntity.getName());
             return spuDTO1;
