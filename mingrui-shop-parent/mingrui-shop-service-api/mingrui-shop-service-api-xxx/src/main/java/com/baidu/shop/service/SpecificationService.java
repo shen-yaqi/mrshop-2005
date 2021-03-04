@@ -9,6 +9,7 @@ import com.baidu.shop.entity.SpecParamEntity;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.ibatis.annotations.Delete;
+import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -41,7 +42,7 @@ public interface SpecificationService {
 
     @ApiOperation(value = "通过条件查询规格参数")
     @GetMapping(value = "specparam/getSpecParamInfo")
-    Result<List<SpecParamEntity>> getSpecParamInfo(SpecParamDTO specParamDTO);
+    Result<List<SpecParamEntity>> getSpecParamInfo(@SpringQueryMap SpecParamDTO specParamDTO);
 
     @ApiOperation(value = "新增规格参数")
     @PostMapping(value = "specparam/save")

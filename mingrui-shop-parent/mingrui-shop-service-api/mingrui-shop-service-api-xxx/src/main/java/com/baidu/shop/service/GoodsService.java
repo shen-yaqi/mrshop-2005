@@ -36,11 +36,11 @@ public interface GoodsService {
 
     @ApiOperation(value = "通过spuId查询spudetail信息")
     @GetMapping(value = "/goods/getSpuDetailBySpuId")
-    Result<SpuDetailEntity> getSpuDetailBySpuId(Integer spuId);
+    Result<SpuDetailEntity> getSpuDetailBySpuId(@RequestParam Integer spuId);
 
     @ApiOperation(value = "通过spuId查询sku信息")
     @GetMapping(value = "/goods/getSkusBySpuId")
-    Result<List<SkuDTO>> getSkusBySpuId(Integer spuId);
+    Result<List<SkuDTO>> getSkusBySpuId(@RequestParam Integer spuId);
 
     @ApiOperation(value = "删除商品")
     @DeleteMapping(value = "/goods/delete")

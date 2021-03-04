@@ -46,7 +46,7 @@ public class GoodsDoc {
 
     private Date createTime;
 
-    private List<Long> price;
+    private List<Long> price;//一个spu --> sku price在sku表中存着 2001
 
     @Field(type = FieldType.Keyword, index = false)
     private String skus;
