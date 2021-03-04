@@ -44,7 +44,7 @@ public class FastDFSUploadController {
 
     @PostMapping
     public Result<String> uploadImg(@RequestParam MultipartFile file) throws IOException {
-
+        
         InputStream inputStream = file.getInputStream();//获取文件输入流(二进制字节流)
         String filename = file.getOriginalFilename();//文件名
         //1.aa.jpg substring 要头不要尾
