@@ -12,8 +12,10 @@ import com.baidu.shop.entity.SpuDetailEntity;
 import com.baidu.shop.feign.GoodsFeign;
 import com.baidu.shop.feign.SpecificationFeign;
 import com.baidu.shop.service.ShopElasticsearchService;
+import com.baidu.shop.status.HTTPStatus;
 import com.baidu.shop.utils.HighlightUtil;
 import com.baidu.shop.utils.JSONUtil;
+import com.google.common.math.DoubleMath;
 import org.apache.commons.lang.math.NumberUtils;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +53,7 @@ public class ShopElasticsearchServiceImpl extends BaseApiService implements Shop
     private ElasticsearchRestTemplate elasticsearchRestTemplate;
 
     @Override
-    public Result<List<GoodsDoc>> search(String search) {
+    public Result<List<GoodsDoc>> search(String search, Integer page) {
 
         NativeSearchQueryBuilder nativeSearchQueryBuilder = new NativeSearchQueryBuilder();
         //多字段查询
@@ -59,14 +61,25 @@ public class ShopElasticsearchServiceImpl extends BaseApiService implements Shop
                 QueryBuilders.multiMatchQuery(search,"title","brandName","categoryName")
         );
         //设置分页
-        nativeSearchQueryBuilder.withPageable(PageRequest.of(0,10));
+        nativeSearchQueryBuilder.withPageable(PageRequest.of(page - 1,10));
         //设置高亮
         nativeSearchQueryBuilder.withHighlightBuilder(HighlightUtil.getHighlightBuilder("title"));
         SearchHits<GoodsDoc> searchHits = elasticsearchRestTemplate.search(nativeSearchQueryBuilder.build(), GoodsDoc.class);
 
         List<GoodsDoc> goodsDocs = HighlightUtil.getHighlightList(searchHits.getSearchHits());
 
-        return this.setResultSuccess(goodsDocs);
+        long total = searchHits.getTotalHits();
+        long totalPage = Double.valueOf(Math.ceil(Double.valueOf(total) / 10)).longValue();
+//        long totalPage = total / 10;
+//        if(totalPage % 10 > 0){
+//            totalPage++;
+//        }
+
+        Map<String, Long> msgMap = new HashMap<>();
+        msgMap.put("total",total);
+        msgMap.put("totalPage",totalPage);
+
+        return this.setResult(HTTPStatus.OK,JSONUtil.toJsonString(msgMap),goodsDocs);
     }
 
     @Override
@@ -187,6 +200,7 @@ public class ShopElasticsearchServiceImpl extends BaseApiService implements Shop
     }
 
     private Map<List<Long>, List<Map<String, Object>>> getSkusAndPriceList(Integer spuId){
+        //List Set Map Entity
 
         Map<List<Long>, List<Map<String, Object>>> hashMap = new HashMap<>();
         Result<List<SkuDTO>> skusInfo = goodsFeign.getSkusBySpuId(spuId);
