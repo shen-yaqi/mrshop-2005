@@ -69,6 +69,71 @@ public class ShopElasticsearchServiceImpl extends BaseApiService implements Shop
     @Override
     public GoodsResponse search(String search, Integer page) {
 
+        //查询es库
+        SearchHits<GoodsDoc> searchHits = elasticsearchRestTemplate.search(this.getNativeSearchQueryBuilder(search,page).build(), GoodsDoc.class);
+
+        List<GoodsDoc> goodsDocs = HighlightUtil.getHighlightList(searchHits.getSearchHits());
+
+        //得到总条数和计算总页数
+        long total = searchHits.getTotalHits();
+        long totalPage = Double.valueOf(Math.ceil(Double.valueOf(total) / 10)).longValue();
+
+        Map<Integer, List<CategoryEntity>> map = this.getCategoryListByBucket(searchHits.getAggregations());
+
+        Integer hotCid = 0;
+        List<CategoryEntity> categoryList = null;
+        for(Map.Entry<Integer, List<CategoryEntity>> entry : map.entrySet()){
+            hotCid = entry.getKey();
+            categoryList = entry.getValue();
+        }
+
+        //通过cid查询规格参数
+        //Map<String, List<String>> specMap = this.getSpecMap(hotCid, search);
+        //返回
+        return new GoodsResponse(total,totalPage,categoryList
+                ,this.getBrandListByBucket(searchHits.getAggregations()),goodsDocs
+                ,this.getSpecMap(hotCid, search));
+    }
+
+    private Map<String, List<String>> getSpecMap(Integer hotCid,String search){
+        SpecParamDTO specParamDTO = new SpecParamDTO();
+        specParamDTO.setCid(hotCid);
+        specParamDTO.setSearching(true);
+        Result<List<SpecParamEntity>> specParamInfo = specificationFeign.getSpecParamInfo(specParamDTO);
+        Map<String, List<String>> specMap = new HashMap<>();
+        if (specParamInfo.isSuccess()) {
+
+            List<SpecParamEntity> specParamList = specParamInfo.getData();
+
+            NativeSearchQueryBuilder nativeSearchQueryBuilder = new NativeSearchQueryBuilder();
+            nativeSearchQueryBuilder.withQuery(
+                    QueryBuilders.multiMatchQuery(search,"title","brandName","categoryName")
+            );
+            nativeSearchQueryBuilder.withPageable(PageRequest.of(0,1));
+            specParamList.stream().forEach(specParam -> {
+                nativeSearchQueryBuilder.addAggregation(AggregationBuilders.terms(specParam.getName())
+                        .field("specs." + specParam.getName() + ".keyword"));
+            });
+
+            SearchHits<GoodsDoc> searchHits = elasticsearchRestTemplate.search(nativeSearchQueryBuilder.build(), GoodsDoc.class);
+            Aggregations aggregations = searchHits.getAggregations();
+
+            specParamList.stream().forEach(specParam -> {
+
+                Terms aggregation = aggregations.get(specParam.getName());
+                List<? extends Terms.Bucket> buckets = aggregation.getBuckets();
+                List<String> valueList = buckets.stream().map(bucket -> bucket.getKeyAsString()).collect(Collectors.toList());
+
+                specMap.put(specParam.getName(),valueList);
+            });
+        }
+
+        return specMap;
+    }
+
+    //得到NativeSearchQueryBuilder
+    private NativeSearchQueryBuilder getNativeSearchQueryBuilder(String search, Integer page){
+
         NativeSearchQueryBuilder nativeSearchQueryBuilder = new NativeSearchQueryBuilder();
         //多字段查询
         nativeSearchQueryBuilder.withQuery(
@@ -84,54 +149,68 @@ public class ShopElasticsearchServiceImpl extends BaseApiService implements Shop
         nativeSearchQueryBuilder.addAggregation(AggregationBuilders.terms("agg_category").field("cid3"));
         nativeSearchQueryBuilder.addAggregation(AggregationBuilders.terms("agg_brand").field("brandId"));
 
-        SearchHits<GoodsDoc> searchHits = elasticsearchRestTemplate.search(nativeSearchQueryBuilder.build(), GoodsDoc.class);
+        return nativeSearchQueryBuilder;
+    }
 
-        List<GoodsDoc> goodsDocs = HighlightUtil.getHighlightList(searchHits.getSearchHits());
-
-        //获取聚合信息
-        Aggregations aggregations = searchHits.getAggregations();
+    //通过聚合得到分类List
+    private Map<Integer, List<CategoryEntity>> getCategoryListByBucket(Aggregations aggregations ){
 
         Terms agg_category = aggregations.get("agg_category");
-        Terms agg_brand = aggregations.get("agg_brand");
-
         List<? extends Terms.Bucket> categoryBuckets = agg_category.getBuckets();
-        List<? extends Terms.Bucket> brandBuckets = agg_brand.getBuckets();
 
-        List<String> categoryIdList = categoryBuckets.stream().map(categoryBucket ->
-                categoryBucket.getKeyAsNumber().longValue() + "").collect(Collectors.toList());
+        //List<Integer> integers = Arrays.asList(0);
+        /*List<Long> docCount = new ArrayList<>();
+        docCount.add(0L);
 
-        List<String> brandIdList = brandBuckets.stream().map(brandBucket ->
-                brandBucket.getKeyAsNumber().longValue() + "").collect(Collectors.toList());
+        List<Integer> hotCid = new ArrayList<>();
+        hotCid.add(0);*/
 
-        //要将List<Long>转换成 String类型的字符串并且用,拼接
+        List<Long> docCount = Arrays.asList(0L);
+        List<Integer> hotCid = Arrays.asList(0);
+
+        //hotCid.get(0)
+
+        //[1,2,3,5,3,6,2]
+        List<String> categoryIdList = categoryBuckets.stream().map(categoryBucket -> {
+
+            if(categoryBucket.getDocCount() > docCount.get(0)){
+
+                docCount.set(0,categoryBucket.getDocCount());
+                hotCid.set(0,categoryBucket.getKeyAsNumber().intValue());
+            }
+
+            return categoryBucket.getKeyAsNumber().longValue() + "";
+        }).collect(Collectors.toList());
 
         Result<List<CategoryEntity>> categoryResult = categoryFeign.getCategoryByIdList(String.join(",", categoryIdList));
-        Result<List<BrandEntity>> brandResult = brandFeign.getBrandByIdList(String.join(",", brandIdList));
+
         List<CategoryEntity> categoryList = null;
         if(categoryResult.isSuccess()){
             categoryList = categoryResult.getData();
         }
+
+        Map<Integer, List<CategoryEntity>> map = new HashMap<>();
+        map.put(hotCid.get(0),categoryList);
+
+        return map;
+    }
+
+    //通过聚合得到品牌List
+    private List<BrandEntity> getBrandListByBucket(Aggregations aggregations){
+
+        Terms agg_brand = aggregations.get("agg_brand");
+        List<? extends Terms.Bucket> brandBuckets = agg_brand.getBuckets();
+
+        List<String> brandIdList = brandBuckets.stream().map(brandBucket ->
+                brandBucket.getKeyAsNumber().longValue() + "").collect(Collectors.toList());
+        Result<List<BrandEntity>> brandResult = brandFeign.getBrandByIdList(String.join(",", brandIdList));
+
         List<BrandEntity> brandList = null;
         if(brandResult.isSuccess()){
             brandList = brandResult.getData();
         }
 
-        long total = searchHits.getTotalHits();
-        long totalPage = Double.valueOf(Math.ceil(Double.valueOf(total) / 10)).longValue();
-//        long totalPage = total / 10;
-//        if(totalPage % 10 > 0){
-//            totalPage++;
-//        }
-
-        /*Map<String, Long> msgMap = new HashMap<>();
-        msgMap.put("total",total);
-        msgMap.put("totalPage",totalPage);*/
-
-        //return this.setResult(HTTPStatus.OK,JSONUtil.toJsonString(msgMap),goodsDocs);
-        /*GoodsResponse goodsResponse = new GoodsResponse();
-        goodsResponse.setData(goodsDocs);*/
-
-        return new GoodsResponse(total,totalPage,categoryList,brandList,goodsDocs);
+        return brandList;
     }
 
     @Override
