@@ -171,6 +171,8 @@ public class GoodsServiceImpl extends BaseApiService implements GoodsService {
             criteria.andEqualTo("saleable",spuDTO.getSaleable());
         if(!StringUtils.isEmpty(spuDTO.getTitle()))
             criteria.andLike("title","%" + spuDTO.getTitle() + "%");
+        if(ObjectUtil.isNotNull(spuDTO.getId()))
+            criteria.andEqualTo("id",spuDTO.getId());
 
         List<SpuEntity> spuEntities = spuMapper.selectByExample(example);
         List<SpuDTO> spuDTOList = spuEntities.stream().map(spuEntity -> {

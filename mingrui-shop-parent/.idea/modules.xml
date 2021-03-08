@@ -14,6 +14,7 @@
       <module fileurl="file://$PROJECT_DIR$/mingrui-shop-service-api/mingrui-shop-service-api-search/mingrui-shop-service-api-search.iml" filepath="$PROJECT_DIR$/mingrui-shop-service-api/mingrui-shop-service-api-search/mingrui-shop-service-api-search.iml" />
       <module fileurl="file://$PROJECT_DIR$/mingrui-shop-service-api/mingrui-shop-service-api-xxx/mingrui-shop-service-api-xxx.iml" filepath="$PROJECT_DIR$/mingrui-shop-service-api/mingrui-shop-service-api-xxx/mingrui-shop-service-api-xxx.iml" />
       <module fileurl="file://$PROJECT_DIR$/mingrui-shop-service/mingrui-shop-service-search/mingrui-shop-service-search.iml" filepath="$PROJECT_DIR$/mingrui-shop-service/mingrui-shop-service-search/mingrui-shop-service-search.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mingrui-shop-service/mingrui-shop-service-template/mingrui-shop-service-template.iml" filepath="$PROJECT_DIR$/mingrui-shop-service/mingrui-shop-service-template/mingrui-shop-service-template.iml" />
       <module fileurl="file://$PROJECT_DIR$/mingrui-shop-service/mingrui-shop-service-xxx/mingrui-shop-service-xxx.iml" filepath="$PROJECT_DIR$/mingrui-shop-service/mingrui-shop-service-xxx/mingrui-shop-service-xxx.iml" />
     </modules>
   </component>
