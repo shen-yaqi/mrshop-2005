@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.PrintWriter;
 import java.util.Map;
 
 /**
@@ -17,17 +19,15 @@ import java.util.Map;
  * @Date 2021/3/8
  * @Version V1.0
  **/
-@Controller
-@RequestMapping(value = "item")
+//@Controller
+//@RequestMapping(value = "item")
 public class PageController {
 
-    @Autowired
+    //@Autowired
     private PageService pageService;
 
-    @GetMapping(value = "{spuId}.html")
-    public String test(@PathVariable(value = "spuId") Integer spuId, ModelMap modelMap){
-        System.out.println(spuId);
-
+    //@GetMapping(value = "{spuId}.html")
+    public String test(@PathVariable(value = "spuId") Integer spuId, ModelMap modelMap, HttpServletResponse httpServletResponse){
         Map<String,Object> map = pageService.getGoodsInfo(spuId);
 
         modelMap.putAll(map);

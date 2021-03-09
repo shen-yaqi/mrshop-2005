@@ -7,6 +7,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="mingrui-shop-basic-upload-server" />
+        <module name="mingrui-shop-service-api-template" />
         <module name="mingrui-shop-common-core" />
         <module name="mingrui-shop-service-xxx" />
         <module name="mingrui-shop-service-search" />
@@ -28,6 +29,7 @@
       <module name="mingrui-shop-service" target="1.8" />
       <module name="mingrui-shop-service-api" target="1.8" />
       <module name="mingrui-shop-service-api-search" target="1.8" />
+      <module name="mingrui-shop-service-api-template" target="1.8" />
       <module name="mingrui-shop-service-api-xxx" target="1.8" />
       <module name="mingrui-shop-service-search" target="1.8" />
       <module name="mingrui-shop-service-template" target="1.8" />
@@ -41,6 +43,7 @@
       <module name="mingrui-shop-basics-eureka-server" options="-parameters" />
       <module name="mingrui-shop-common-core" options="-parameters" />
       <module name="mingrui-shop-service-api-search" options="-parameters" />
+      <module name="mingrui-shop-service-api-template" options="-parameters" />
       <module name="mingrui-shop-service-api-xxx" options="-parameters" />
       <module name="mingrui-shop-service-search" options="-parameters" />
       <module name="mingrui-shop-service-template" options="-parameters" />
