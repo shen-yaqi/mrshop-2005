@@ -11,6 +11,8 @@
         <module name="mingrui-shop-common-core" />
         <module name="mingrui-shop-service-xxx" />
         <module name="mingrui-shop-service-search" />
+        <module name="mingrui-shop-service-api-user" />
+        <module name="mingrui-shop-service-user" />
         <module name="mingrui-shop-service-template" />
         <module name="mingrui-shop-service-api-xxx" />
         <module name="mingrui-shop-basics-eureka-server" />
@@ -30,9 +32,11 @@
       <module name="mingrui-shop-service-api" target="1.8" />
       <module name="mingrui-shop-service-api-search" target="1.8" />
       <module name="mingrui-shop-service-api-template" target="1.8" />
+      <module name="mingrui-shop-service-api-user" target="1.8" />
       <module name="mingrui-shop-service-api-xxx" target="1.8" />
       <module name="mingrui-shop-service-search" target="1.8" />
       <module name="mingrui-shop-service-template" target="1.8" />
+      <module name="mingrui-shop-service-user" target="1.8" />
       <module name="mingrui-shop-service-xxx" target="1.8" />
     </bytecodeTargetLevel>
   </component>
@@ -44,9 +48,11 @@
       <module name="mingrui-shop-common-core" options="-parameters" />
       <module name="mingrui-shop-service-api-search" options="-parameters" />
       <module name="mingrui-shop-service-api-template" options="-parameters" />
+      <module name="mingrui-shop-service-api-user" options="-parameters" />
       <module name="mingrui-shop-service-api-xxx" options="-parameters" />
       <module name="mingrui-shop-service-search" options="-parameters" />
       <module name="mingrui-shop-service-template" options="-parameters" />
+      <module name="mingrui-shop-service-user" options="-parameters" />
       <module name="mingrui-shop-service-xxx" options="-parameters" />
     </option>
   </component>

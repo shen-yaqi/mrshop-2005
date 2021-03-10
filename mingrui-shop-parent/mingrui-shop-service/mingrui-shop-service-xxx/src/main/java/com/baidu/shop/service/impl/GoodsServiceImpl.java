@@ -59,9 +59,16 @@ public class GoodsServiceImpl extends BaseApiService implements GoodsService {
     private MrRabbitMQ mrRabbitMQ;
 
     @Override
-    @Transactional
+    //@Transactional
     public Result<JSONObject> deleteGoods(Integer spuId) {
 
+        this.deleteGoodsTransactional(spuId);
+        mrRabbitMQ.send(spuId + "", MqMessageConstant.SPU_ROUT_KEY_DELETE);
+        return this.setResultSuccess();
+    }
+
+    @Transactional
+    public void deleteGoodsTransactional(Integer spuId){
         //删除spu
         spuMapper.deleteByPrimaryKey(spuId);
         //删除spuDetail
@@ -69,9 +76,6 @@ public class GoodsServiceImpl extends BaseApiService implements GoodsService {
         //删除sku 和 stock
         //通过spuId查询sku信息
         this.deleteSkusAndStock(spuId);
-
-        mrRabbitMQ.send(spuId + "", MqMessageConstant.SPU_ROUT_KEY_DELETE);
-        return this.setResultSuccess();
     }
 
     private void deleteSkusAndStock(Integer spuId){
@@ -85,9 +89,17 @@ public class GoodsServiceImpl extends BaseApiService implements GoodsService {
     }
 
     @Override
-    @Transactional
+    //@Transactional
     public Result<JSONObject> editGoods(SpuDTO spuDTO) {
 
+        this.editGoodsTransactional(spuDTO);
+        mrRabbitMQ.send(spuDTO.getId() + "", MqMessageConstant.SPU_ROUT_KEY_UPDATE);
+
+        return this.setResultSuccess();
+    }
+
+    @Transactional
+    public void editGoodsTransactional(SpuDTO spuDTO){
         final Date date = new Date();
         //修改spu
         SpuEntity spuEntity = BaiduBeanUtil.copyProperties(spuDTO, SpuEntity.class);
@@ -101,10 +113,6 @@ public class GoodsServiceImpl extends BaseApiService implements GoodsService {
         this.deleteSkusAndStock(spuEntity.getId());
 
         this.saveSkusAndStockInfo(spuDTO,spuEntity.getId(),date);
-
-        mrRabbitMQ.send(spuDTO.getId() + "", MqMessageConstant.SPU_ROUT_KEY_UPDATE);
-
-        return this.setResultSuccess();
     }
 
     private void saveSkusAndStockInfo(SpuDTO spuDTO,Integer spuId,Date date){
