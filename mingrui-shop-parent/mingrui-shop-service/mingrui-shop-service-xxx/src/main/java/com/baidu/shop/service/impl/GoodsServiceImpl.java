@@ -3,6 +3,8 @@ package com.baidu.shop.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.baidu.shop.base.BaseApiService;
 import com.baidu.shop.base.Result;
+import com.baidu.shop.component.MrRabbitMQ;
+import com.baidu.shop.constant.MqMessageConstant;
 import com.baidu.shop.dto.SkuDTO;
 import com.baidu.shop.dto.SpuDTO;
 import com.baidu.shop.dto.SpuDetailDTO;
@@ -16,6 +18,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.sun.org.apache.bcel.internal.generic.NEW;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RestController;
@@ -52,6 +55,9 @@ public class GoodsServiceImpl extends BaseApiService implements GoodsService {
     @Resource
     private StockMapper stockMapper;
 
+    @Autowired
+    private MrRabbitMQ mrRabbitMQ;
+
     @Override
     @Transactional
     public Result<JSONObject> deleteGoods(Integer spuId) {
@@ -64,6 +70,7 @@ public class GoodsServiceImpl extends BaseApiService implements GoodsService {
         //通过spuId查询sku信息
         this.deleteSkusAndStock(spuId);
 
+        mrRabbitMQ.send(spuId + "", MqMessageConstant.SPU_ROUT_KEY_DELETE);
         return this.setResultSuccess();
     }
 
@@ -94,6 +101,8 @@ public class GoodsServiceImpl extends BaseApiService implements GoodsService {
         this.deleteSkusAndStock(spuEntity.getId());
 
         this.saveSkusAndStockInfo(spuDTO,spuEntity.getId(),date);
+
+        mrRabbitMQ.send(spuDTO.getId() + "", MqMessageConstant.SPU_ROUT_KEY_UPDATE);
 
         return this.setResultSuccess();
     }
@@ -132,8 +141,17 @@ public class GoodsServiceImpl extends BaseApiService implements GoodsService {
     }
 
     @Override
-    @Transactional
+    //@Transactional
     public Result<JSONObject> saveGoods(SpuDTO spuDTO) {
+
+        Integer spuId = this.saveGoodsTransactional(spuDTO);
+        mrRabbitMQ.send(spuId + "", MqMessageConstant.SPU_ROUT_KEY_SAVE);
+
+        return this.setResultSuccess();
+    }
+
+    @Transactional
+    public Integer saveGoodsTransactional(SpuDTO spuDTO){
         //final finally finalize()的区别????
         final Date date = new Date();
         //新增spu,新增返回主键, 给必要字段赋默认值
@@ -152,8 +170,7 @@ public class GoodsServiceImpl extends BaseApiService implements GoodsService {
 
         //新增sku list插入顺序有序 b,a set a,b treeSet b,a
         this.saveSkusAndStockInfo(spuDTO,spuEntity.getId(),date);
-
-        return this.setResultSuccess();
+        return spuEntity.getId();
     }
 
     @Override
