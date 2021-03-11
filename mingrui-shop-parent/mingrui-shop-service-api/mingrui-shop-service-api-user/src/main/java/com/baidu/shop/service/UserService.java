@@ -24,9 +24,13 @@ import java.util.List;
 @Api(tags = "用户接口")
 public interface UserService {
 
+    @ApiOperation(value = "校验手机验证码")
+    @GetMapping(value = "user/checkCode")
+    Result<JSONObject> checkCode(String phone,String code);
+
     @ApiOperation(value = "用户注册")
     @PostMapping(value = "user/register")
-    Result<JSONObject> register(UserDTO userDTO);
+    Result<JSONObject> register(@RequestBody UserDTO userDTO);
 
     @ApiOperation(value = "给手机发送验证码")
     @PostMapping(value = "user/send")

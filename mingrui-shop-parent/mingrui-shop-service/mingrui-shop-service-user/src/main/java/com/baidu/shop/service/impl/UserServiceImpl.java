@@ -3,6 +3,7 @@ package com.baidu.shop.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.baidu.shop.base.BaseApiService;
 import com.baidu.shop.base.Result;
+import com.baidu.shop.constant.MrConstants;
 import com.baidu.shop.dto.UserDTO;
 import com.baidu.shop.entity.UserEntity;
 import com.baidu.shop.mapper.UserMapper;
@@ -40,6 +41,17 @@ public class UserServiceImpl extends BaseApiService implements UserService {
     private RedisRepository redisRepository;
 
     @Override
+    public Result<JSONObject> checkCode(String phone, String code) {
+
+        String redisCode = redisRepository.get(MrConstants.REDIS_DUANXIN_CODE_PRE + phone);
+        if(code.equals(redisCode)){
+            return this.setResultSuccess();
+        }
+
+        return this.setResultError("验证码输入错误");
+    }
+
+    @Override
     public Result<JSONObject> send(UserDTO userDTO) {
         //验证码
         String code= (int)((Math.random() * 9 + 1) * 100000) + "";
@@ -48,8 +60,8 @@ public class UserServiceImpl extends BaseApiService implements UserService {
         //LuosimaoDuanxinUtil.SendCode(userDTO.getPhone(),code);
         //LuosimaoDuanxinUtil.sendSpeak(userDTO.getPhone(),code);
         log.info("手机号码为 : {} , 验证为 : {}", userDTO.getPhone(),code);
-        redisRepository.set("valid-code-" + userDTO.getPhone(),code);
-        redisRepository.expire("valid-code-" + userDTO.getPhone(),60L);
+        redisRepository.set(MrConstants.REDIS_DUANXIN_CODE_PRE + userDTO.getPhone(),code);
+        redisRepository.expire(MrConstants.REDIS_DUANXIN_CODE_PRE + userDTO.getPhone(),60L);
 
         return this.setResultSuccess();
     }
