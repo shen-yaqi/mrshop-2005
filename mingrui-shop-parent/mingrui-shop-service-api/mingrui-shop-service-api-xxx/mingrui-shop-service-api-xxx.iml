@@ -143,6 +143,8 @@
     <orderEntry type="library" name="Maven: org.elasticsearch.plugin:rank-eval-client:7.6.2" level="project" />
     <orderEntry type="library" name="Maven: org.elasticsearch.plugin:lang-mustache-client:7.6.2" level="project" />
     <orderEntry type="library" name="Maven: com.github.spullara.mustache.java:compiler:0.9.6" level="project" />
+    <orderEntry type="library" name="Maven: com.mrshop.luosimao:jersey-bundle:1.0.0" level="project" />
+    <orderEntry type="library" name="Maven: com.mrshop.luosimao:json-org:1.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.cloud:spring-cloud-starter-openfeign:2.2.1.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.cloud:spring-cloud-starter:2.2.1.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.cloud:spring-cloud-context:2.2.1.RELEASE" level="project" />

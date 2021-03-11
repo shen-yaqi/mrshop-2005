@@ -6,13 +6,19 @@ import com.baidu.shop.base.Result;
 import com.baidu.shop.dto.UserDTO;
 import com.baidu.shop.entity.UserEntity;
 import com.baidu.shop.mapper.UserMapper;
+import com.baidu.shop.redis.repository.RedisRepository;
 import com.baidu.shop.service.UserService;
 import com.baidu.shop.utils.BCryptUtil;
 import com.baidu.shop.utils.BaiduBeanUtil;
+import com.baidu.shop.utils.LuosimaoDuanxinUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.Date;
 import java.util.List;
 
@@ -24,10 +30,14 @@ import java.util.List;
  * @Version V1.0
  **/
 @RestController
+@Slf4j
 public class UserServiceImpl extends BaseApiService implements UserService {
 
     @Resource
     private UserMapper userMapper;
+
+    @Autowired
+    private RedisRepository redisRepository;
 
     @Override
     public Result<JSONObject> send(UserDTO userDTO) {
@@ -35,6 +45,12 @@ public class UserServiceImpl extends BaseApiService implements UserService {
         String code= (int)((Math.random() * 9 + 1) * 100000) + "";
         //手机号
         //发送验证码
+        //LuosimaoDuanxinUtil.SendCode(userDTO.getPhone(),code);
+        //LuosimaoDuanxinUtil.sendSpeak(userDTO.getPhone(),code);
+        log.info("手机号码为 : {} , 验证为 : {}", userDTO.getPhone(),code);
+        redisRepository.set("valid-code-" + userDTO.getPhone(),code);
+        redisRepository.expire("valid-code-" + userDTO.getPhone(),60L);
+
         return this.setResultSuccess();
     }
 
