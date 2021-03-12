@@ -11,6 +11,7 @@ zuul:
     xxx-server: /manage/**
     search-server: /search/**
     user-server: /user-center/**
+    oauth-server: /oauth-center/**
   # 声明路由
 #  routes:
 #    # 路由名称
@@ -28,6 +29,8 @@ zuul:
   # 忽略上传服务
   ignored-services:
     -upload-server
+  add-host-header: true
+  sensitive-headers:
 
 
 #配置负载

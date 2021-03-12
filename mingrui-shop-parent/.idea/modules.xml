@@ -3,10 +3,12 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/mingrui-shop-basics/mingrui-shop-basic-upload-server/mingrui-shop-basic-upload-server.iml" filepath="$PROJECT_DIR$/mingrui-shop-basics/mingrui-shop-basic-upload-server/mingrui-shop-basic-upload-server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mingrui-shop-basics/mingrui-shop-basic-user-oauth/mingrui-shop-basic-user-oauth.iml" filepath="$PROJECT_DIR$/mingrui-shop-basics/mingrui-shop-basic-user-oauth/mingrui-shop-basic-user-oauth.iml" />
       <module fileurl="file://$PROJECT_DIR$/mingrui-shop-basics/mingrui-shop-basic-zuul-server/mingrui-shop-basic-zuul-server.iml" filepath="$PROJECT_DIR$/mingrui-shop-basics/mingrui-shop-basic-zuul-server/mingrui-shop-basic-zuul-server.iml" />
       <module fileurl="file://$PROJECT_DIR$/mingrui-shop-basics/mingrui-shop-basics.iml" filepath="$PROJECT_DIR$/mingrui-shop-basics/mingrui-shop-basics.iml" />
       <module fileurl="file://$PROJECT_DIR$/mingrui-shop-basics/mingrui-shop-basics-eureka-server/mingrui-shop-basics-eureka-server.iml" filepath="$PROJECT_DIR$/mingrui-shop-basics/mingrui-shop-basics-eureka-server/mingrui-shop-basics-eureka-server.iml" />
       <module fileurl="file://$PROJECT_DIR$/mingrui-shop-commons/mingrui-shop-common-core/mingrui-shop-common-core.iml" filepath="$PROJECT_DIR$/mingrui-shop-commons/mingrui-shop-common-core/mingrui-shop-common-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mingrui-shop-commons/mingrui-shop-common-oauth/mingrui-shop-common-oauth.iml" filepath="$PROJECT_DIR$/mingrui-shop-commons/mingrui-shop-common-oauth/mingrui-shop-common-oauth.iml" />
       <module fileurl="file://$PROJECT_DIR$/mingrui-shop-commons/mingrui-shop-commons.iml" filepath="$PROJECT_DIR$/mingrui-shop-commons/mingrui-shop-commons.iml" />
       <module fileurl="file://$PROJECT_DIR$/mingrui-shop-parent.iml" filepath="$PROJECT_DIR$/mingrui-shop-parent.iml" />
       <module fileurl="file://$PROJECT_DIR$/mingrui-shop-service/mingrui-shop-service.iml" filepath="$PROJECT_DIR$/mingrui-shop-service/mingrui-shop-service.iml" />
