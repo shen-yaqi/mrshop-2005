@@ -6,8 +6,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.json.JSONObject;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.List;
 
 /**
  * @ClassName CarService
@@ -22,4 +25,12 @@ public interface CarService {
     @ApiOperation(value = "添加商品到购物车")
     @PostMapping(value = "car/addCar")
     Result<JSONObject> addCar(@RequestBody Car car, @CookieValue(value = "MRSHOP_TOKEN") String token);
+
+    @ApiOperation(value = "合并购物车")
+    @PostMapping(value = "car/mergeCar")
+    Result<JSONObject> mergeCar(@RequestBody String carList, @CookieValue(value = "MRSHOP_TOKEN") String token);
+
+    @ApiOperation(value = "获取当前登录用户的购物车信息")
+    @GetMapping(value = "car/getUserCar")
+    Result<List<Car>> getUserCar(@CookieValue(value = "MRSHOP_TOKEN") String token);
 }

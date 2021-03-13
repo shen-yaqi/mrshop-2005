@@ -648,7 +648,7 @@
                         skuId:this.sku.id,
                         num:this.num
                     }).then(resp => {
-                        console.log(resp)
+                        window.location.href = '../success-cart.html';
                     }).catch(error => console.log(error));
                 }).catch(() => {
                     //用户没有登录
@@ -657,7 +657,7 @@
                     //let carList = [];
 
                     //获取localStorage中的购物车数据
-                    let carList = mrshop.store.get('carList') || [];
+                    let carList = mrshop.store.get(mrshop.CAR_LIST) || [];
                     //先判断当前购物车列表中有没有当前商品
                     //有 : 原来商品的num + 现在商品的num
                     const oldGoods = carList.find(goods => goods.skuId == this.sku.id);
@@ -675,11 +675,11 @@
                         };
                         carList.push(car);//想数组中放元素
                     }
-                    mrshop.store.set('carList',carList);//将购物车数据放到localStorage中
-                })
-
-                //用户已经登录
-
+                    mrshop.store.set(mrshop.CAR_LIST,carList);//将购物车数据放到localStorage中
+                    window.location.href = '../success-cart.html';
+                });
+                //不能直接在此处跳转, axios是异步的,在此处直接跳转的话 axios还没有请求成功就已经跳转了页面了,所以会导致添加到购物车失败
+                //window.location.href = '../success-cart.html';
             },
             increment () {
                 if(this.sku.stock > this.num) this.num++;

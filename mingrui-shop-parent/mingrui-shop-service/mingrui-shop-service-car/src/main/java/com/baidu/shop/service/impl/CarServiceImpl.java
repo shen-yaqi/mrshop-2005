@@ -1,5 +1,6 @@
 package com.baidu.shop.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
 import com.baidu.shop.base.BaseApiService;
 import com.baidu.shop.base.Result;
 import com.baidu.shop.config.JwtConfig;
@@ -19,7 +20,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -43,6 +46,38 @@ public class CarServiceImpl extends BaseApiService implements CarService {
 
     @Autowired
     private GoodsFeign goodsFeign;
+
+    @Override
+    public Result<List<Car>> getUserCar(String token) {
+        List<Car> cars = new ArrayList<>();
+        try {
+            UserInfo userInfo = JwtUtils.getInfoFromToken(token, jwtConfig.getPublicKey());
+            //redis Hash Map<userId, Map<skuId, goods>> map = new HashMap<>();
+            Map<String, String> map = redisRepository.getHash(GOODS_CAR_PRE + userInfo.getId());
+
+            map.forEach((key,value) -> cars.add(JSONUtil.toBean(value,Car.class)));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return this.setResultSuccess(cars);
+    }
+
+    @Override
+    public Result<JSONObject> mergeCar(String carList, String token) {
+        //将string类型的字符串({carList:[]})转换成json对象
+        com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(carList);
+        //通过key获取数据
+        JSONArray carListJsonArray = jsonObject.getJSONArray("carList");
+        //将json数组转换成集合
+        List<Car> carsList = carListJsonArray.toJavaList(Car.class);
+
+        carsList.stream().forEach(car -> {
+            this.addCar(car,token);
+        });
+        return this.setResultSuccess();
+    }
 
     @Override
     public Result<JSONObject> addCar(Car car,String token) {
