@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baidu.shop.base.Result;
 import com.baidu.shop.dto.SkuDTO;
 import com.baidu.shop.dto.SpuDTO;
+import com.baidu.shop.entity.SkuEntity;
 import com.baidu.shop.entity.SpuDetailEntity;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -45,4 +46,8 @@ public interface GoodsService {
     @ApiOperation(value = "删除商品")
     @DeleteMapping(value = "/goods/delete")
     Result<JSONObject> deleteGoods(Integer spuId);
+
+    @ApiOperation(value = "通过skuId查询sku信息")
+    @GetMapping(value = "/goods/getSkuById")
+    Result<SkuEntity> getSkuById(@RequestParam Long skuId);
 }

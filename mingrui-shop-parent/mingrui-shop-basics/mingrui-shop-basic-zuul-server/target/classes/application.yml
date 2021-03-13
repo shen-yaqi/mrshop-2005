@@ -12,6 +12,7 @@ zuul:
     search-server: /search/**
     user-server: /user-center/**
     oauth-server: /oauth-center/**
+    car-server: /car/**
   # 声明路由
 #  routes:
 #    # 路由名称
@@ -53,3 +54,12 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/
+
+
+mrshop:
+  #声明不进行拦截的请求用,分隔
+  filter:
+    excludes: /api/oauth-center/oauth/login,/api/user-center/user/register,/api/search/es/search,/user/check
+  jwt:
+    pubKeyPath: D:\rea.pub # 公钥地址(私钥加密,公钥解密)
+    cookieName: MRSHOP_TOKEN

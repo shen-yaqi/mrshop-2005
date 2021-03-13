@@ -59,6 +59,14 @@ public class GoodsServiceImpl extends BaseApiService implements GoodsService {
     private MrRabbitMQ mrRabbitMQ;
 
     @Override
+    public Result<SkuEntity> getSkuById(Long skuId) {
+
+        SkuEntity skuEntity = skuMapper.selectByPrimaryKey(skuId);
+
+        return this.setResultSuccess(skuEntity);
+    }
+
+    @Override
     //@Transactional
     public Result<JSONObject> deleteGoods(Integer spuId) {
 
