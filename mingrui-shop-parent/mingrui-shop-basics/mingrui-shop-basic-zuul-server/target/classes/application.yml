@@ -13,6 +13,8 @@ zuul:
     user-server: /user-center/**
     oauth-server: /oauth-center/**
     car-server: /car/**
+    order-server: /order/**
+    pay-server: /pay/**
   # 声明路由
 #  routes:
 #    # 路由名称
